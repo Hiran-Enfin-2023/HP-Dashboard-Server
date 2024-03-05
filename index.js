@@ -16,7 +16,7 @@ var options = {
 //var server = https.createServer(options,app).listen(config.port);
 app.use(express.static('public'));
 app.use(cors())
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5171;
 http.createServer(app).listen(port);
 
 app.use(bodyParser.json());
