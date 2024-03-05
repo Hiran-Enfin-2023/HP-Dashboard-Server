@@ -52,14 +52,10 @@ module.exports = {
   init: function (app, config) {
     var fs = require("fs");
     var mongoose = require("mongoose");
-    const db_URL =
-      port === "5000"
-        ? config.db_URL_HP
-        : port === "5001"
-        ? config.db_URL_EXPO
-        : config.db_URL_XCYTE;
+    const db_URL = "mongodb+srv://hiranraj:Hiran2001@cluster0.6pnihvs.mongodb.net/HP_APC_Dashboard?retryWrites=true&w=majority"
     mongoose.connect(db_URL).then(()=>{
       console.log("connection successful");
+      console.log(db_URL);
     }).catch((err)=>{
       console.log(err);
     });
