@@ -6,6 +6,7 @@ var fs         = require('fs');
 var bodyParser = require('body-parser')
 var cors = require('cors');
 require("dotenv").config();
+
 var  config  = JSON.parse(fs.readFileSync('./config.json'));
 var options = {
     key : fs.readFileSync(config.key),
@@ -15,7 +16,7 @@ var options = {
 //var server = https.createServer(options,app).listen(config.port);
 app.use(express.static('public'));
 app.use(cors())
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 http.createServer(app).listen(port);
 
 app.use(bodyParser.json());
