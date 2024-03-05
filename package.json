@@ -4,13 +4,7 @@
   "description": "Dashboard for HP",
   "main": "index.js",
   "scripts": {
-    "start-expo": "PORT=5001 node index.js",
-    "start-hp": "PORT=5000 nodemon index.js",
-    "start-xcyte": "PORT=5002 node index.js",
-    "dev-expo": "PORT=5001 nodemon index.js",
-    "dev-hp": "PORT=5000 nodemon index.js",
-    "dev-xcyte": "PORT=5002 nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "@nithin",
   "license": "ISC",
