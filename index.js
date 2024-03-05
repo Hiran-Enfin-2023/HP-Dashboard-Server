@@ -13,7 +13,7 @@ var options = {
     cert: fs.readFileSync(config.cert),
     ca: [fs.readFileSync(config.ca)]
 };
-//var server = https.createServer(options,app).listen(config.port);
+var server = https.createServer(options,app).listen(config.port);
 app.use(express.static('public'));
 app.use(cors())
 const port = process.env.PORT || 5171;

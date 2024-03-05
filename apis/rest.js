@@ -8,29 +8,44 @@ const path = require("path");
 const sqlite = require("sqlite3").verbose();
 const fs = require("fs");
 
-const SQLITE_CONCIERGE_DB_PATH = path.join(__dirname, '../db', 'ConciergeChatbot.sqlite');
-const SQLITE_PRODUCT_DB_PATH = path.join(__dirname, '../db', 'ProductChatbot.sqlite');
-const SQL_CONCIERGE_DB_PATH = path.join(__dirname, '../db', 'Concierge.sql')
-const SQL_PRODUCT_DB_PATH = path.join(__dirname, '../db', 'Product.sql')
-
+const SQLITE_CONCIERGE_DB_PATH = path.join(
+  __dirname,
+  "../db",
+  "ConciergeChatbot.sqlite"
+);
+const SQLITE_PRODUCT_DB_PATH = path.join(
+  __dirname,
+  "../db",
+  "ProductChatbot.sqlite"
+);
+const SQL_CONCIERGE_DB_PATH = path.join(__dirname, "../db", "Concierge.sql");
+const SQL_PRODUCT_DB_PATH = path.join(__dirname, "../db", "Product.sql");
 
 // const SQL_CONCIERGE_DB_PATH = "/home/efin/Code/Hp_dashboard_Ashish/db/ProductChatbot.sqlite";
 // const SQL_PRODUCT_DB_PATH = "/home/efin/Code/Hp_dashboard_Ashish/db/ConciergeChatbot.sqlite";
-const CONCEIGER_DB = new sqlite.Database(SQLITE_CONCIERGE_DB_PATH, sqlite.OPEN_READONLY, (err) => {
-  if (err) {
-    console.error(`Error opening database: ${err.message}`);
-  } else {
-    console.log(`Connected to the database: ${SQLITE_CONCIERGE_DB_PATH}`);
+const CONCEIGER_DB = new sqlite.Database(
+  SQLITE_CONCIERGE_DB_PATH,
+  sqlite.OPEN_READONLY,
+  (err) => {
+    if (err) {
+      console.error(`Error opening database: ${err.message}`);
+    } else {
+      console.log(`Connected to the database: ${SQLITE_CONCIERGE_DB_PATH}`);
+    }
   }
-});
+);
 
-const  PRODUCT_DB = new sqlite.Database(SQLITE_PRODUCT_DB_PATH, sqlite.OPEN_READONLY, (err) => {
-  if (err) {
-    console.error(`Error opening database: ${err.message}`);
-  } else {
-    console.log(`Connected to the database: ${SQLITE_PRODUCT_DB_PATH}`);
+const PRODUCT_DB = new sqlite.Database(
+  SQLITE_PRODUCT_DB_PATH,
+  sqlite.OPEN_READONLY,
+  (err) => {
+    if (err) {
+      console.error(`Error opening database: ${err.message}`);
+    } else {
+      console.log(`Connected to the database: ${SQLITE_PRODUCT_DB_PATH}`);
+    }
   }
-});
+);
 const port = process.env.PORT;
 
 module.exports = {
@@ -43,7 +58,11 @@ module.exports = {
         : port === "5001"
         ? config.db_URL_EXPO
         : config.db_URL_XCYTE;
-    mongoose.connect(db_URL);
+    mongoose.connect(db_URL).then(()=>{
+      console.log("connection successful");
+    }).catch((err)=>{
+      console.log(err);
+    });
     const ALLOW_DUPLICATE = true;
     /**
      * For saving users visited
@@ -74,30 +93,24 @@ module.exports = {
       });
     });
 
-
     // API Refresher
 
     app.get("/rest/refresh", (req, res) => {
       (async () => {
         const { createBackup } = await import("@cretezy/cloudflare-d1-backup");
 
-
-// sql write Concierge
+        // sql write Concierge
         createBackup({
           accountId: "e740addb6f457fe8a3ba3a773776d467",
           databaseId: "10863c58-c03e-4fab-abf2-bcdf3d829759",
           apiKey: "VeIr7vgnElqVRHAeevWc0pAtCIJrkex4TusKAks_",
         }).then((backup) => {
-          fs.writeFile(
-            SQL_CONCIERGE_DB_PATH,
-            backup,
-            (err) => {
-              if (err) console.log(err);
-              else {
-                console.log(" Concierge File written successfully\n");
-              }
+          fs.writeFile(SQL_CONCIERGE_DB_PATH, backup, (err) => {
+            if (err) console.log(err);
+            else {
+              console.log(" Concierge File written successfully\n");
             }
-          );
+          });
         });
 
         // sql write Product
@@ -106,29 +119,21 @@ module.exports = {
           databaseId: "03bf3813-0319-4d26-b4b4-0870b31c53c8",
           apiKey: "VeIr7vgnElqVRHAeevWc0pAtCIJrkex4TusKAks_",
         }).then((backup) => {
-          fs.writeFile(
-            SQL_PRODUCT_DB_PATH,
-            backup,
-            (err) => {
-              if (err) console.log(err);
-              else {
-                console.log(" Product File written successfully\n");
-              }
+          fs.writeFile(SQL_PRODUCT_DB_PATH, backup, (err) => {
+            if (err) console.log(err);
+            else {
+              console.log(" Product File written successfully\n");
             }
-          );
+          });
         });
 
-
-
-        // Sqlite write conceirge 
+        // Sqlite write conceirge
         const sqlConciergeQueries = fs.readFileSync(
           SQL_CONCIERGE_DB_PATH,
           "utf8"
         );
 
-        const conciergeDB = new sqlite.Database(
-          SQLITE_CONCIERGE_DB_PATH
-        );
+        const conciergeDB = new sqlite.Database(SQLITE_CONCIERGE_DB_PATH);
         conciergeDB.serialize(() => {
           conciergeDB.exec(sqlConciergeQueries, (err) => {
             if (err) {
@@ -141,16 +146,11 @@ module.exports = {
           });
         });
 
-        // // Sqlite write product 
+        // // Sqlite write product
 
-        const sqlProductQueries = fs.readFileSync(
-          SQL_PRODUCT_DB_PATH,
-          "utf8"
-        );
+        const sqlProductQueries = fs.readFileSync(SQL_PRODUCT_DB_PATH, "utf8");
 
-        const productDB = new sqlite.Database(
-          SQLITE_PRODUCT_DB_PATH
-        );
+        const productDB = new sqlite.Database(SQLITE_PRODUCT_DB_PATH);
         productDB.serialize(() => {
           productDB.exec(sqlProductQueries, (err) => {
             if (err) {
@@ -182,7 +182,6 @@ module.exports = {
     });
 
     app.get("/rest/product/sessions", (req, res) => {
-    
       const query = "SELECT DISTINCT sessionId, timestamp FROM Messages";
 
       PRODUCT_DB.all(query, [], (err, rows) => {
@@ -212,7 +211,6 @@ module.exports = {
 
     //get product sessions ids
     app.get("/rest/product/:sessionId", async (req, res) => {
-
       const sessionId = req.params.sessionId;
       const query = "SELECT * FROM Messages WHERE sessionId = ?";
       PRODUCT_DB.all(query, [sessionId], (err, rows) => {
