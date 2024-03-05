@@ -1,0 +1,8 @@
+{
+    "cert": "cert/cert.crt",
+    "key": "cert/server.key",
+    "ca": "cert/ca.crt",
+    "db_URL_HP": "mongodb://localhost:27017/hp_db",
+    "db_URL_EXPO": "mongodb://localhost:27017/expo_db",
+    "db_URL_XCYTE": "mongodb://localhost:27017/xcyte_db"
+}
