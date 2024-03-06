@@ -109,23 +109,6 @@ module.exports = {
             if (err) console.log(err);
             else {
               console.log(" Concierge File written successfully\n");
-              const sqlConciergeQueries = fs.readFileSync(
-                SQL_CONCIERGE_DB_PATH,
-                "utf8"
-              );
-
-              const conciergeDB = new sqlite.Database(SQLITE_CONCIERGE_DB_PATH);
-              conciergeDB.serialize(() => {
-                conciergeDB.exec(sqlConciergeQueries, (err) => {
-                  if (err) {
-                    console.error("Error executing SQL queries:", err.message);
-                  } else {
-                    console.log("Concierge SQL queries executed successfully.");
-                  }
-
-                  conciergeDB.close();
-                });
-              });
             }
           });
         });
@@ -163,6 +146,7 @@ module.exports = {
         });
 
         // Sqlite write conceirge
+
 
         // // Sqlite write product
       })();
@@ -230,11 +214,12 @@ module.exports = {
      * For admin details
      */
     app.post("/rest/login-admin", async (req, res) => {
-      let { username, password, email, initialAdmin = false } = req.body;
+      let { username, password, initialAdmin = false } = req.body;
+ 
       try {
         const admin = new Admin({
           name: username,
-          email,
+          // email,
           password,
         });
         initialAdmin &&
@@ -246,7 +231,7 @@ module.exports = {
                 results: {
                   id: admin._id,
                   name: admin.name,
-                  email: admin.email,
+                  // email: admin.email,
                 },
               });
             }
@@ -254,7 +239,7 @@ module.exports = {
         !initialAdmin &&
           Admin.findOne({
             name: username,
-            email,
+            // email,
           }).exec(async (err, admin) => {
             if (err) {
               res.status(400).json({
@@ -292,7 +277,7 @@ module.exports = {
                   results: {
                     id: admin._id,
                     name: admin.name,
-                    email: admin.email,
+                    // email: admin.email,
                     access_token: token,
                   },
                 });

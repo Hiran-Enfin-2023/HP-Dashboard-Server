@@ -16,20 +16,20 @@ var adminSchema = new mongoose.Schema(
         message: (props) => `${props.value} is already used by another user`,
       },
     },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      match: [/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/, "Invalid email format"],
-      validate: {
-        validator: function (value) {
-          return this.model("admins")
-            .findOne({ email: value })
-            .then((admin) => !admin);
-        },
-        message: (props) => `${props.value} is already used by another user`,
-      },
-    },
+    // email: {
+    //   type: String,
+    //   required: true,
+    //   unique: true,
+    //   match: [/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/, "Invalid email format"],
+    //   validate: {
+    //     validator: function (value) {
+    //       return this.model("admins")
+    //         .findOne({ email: value })
+    //         .then((admin) => !admin);
+    //     },
+    //     message: (props) => `${props.value} is already used by another user`,
+    //   },
+    // },
     password: {
       type: String,
       required: true,
