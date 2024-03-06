@@ -52,13 +52,17 @@ module.exports = {
   init: function (app, config) {
     var fs = require("fs");
     var mongoose = require("mongoose");
-    const db_URL = "mongodb+srv://hiranraj:Hiran2001@cluster0.6pnihvs.mongodb.net/HP_APC_Dashboard?retryWrites=true&w=majority"
-    mongoose.connect(db_URL).then(()=>{
-      console.log("connection successful");
-      console.log(db_URL);
-    }).catch((err)=>{
-      console.log(err);
-    });
+    const db_URL =
+      "mongodb+srv://hiranraj:Hiran2001@cluster0.6pnihvs.mongodb.net/HP_APC_Dashboard?retryWrites=true&w=majority";
+    mongoose
+      .connect(db_URL)
+      .then(() => {
+        console.log("connection successful");
+        console.log(db_URL);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     const ALLOW_DUPLICATE = true;
     /**
      * For saving users visited
@@ -105,6 +109,23 @@ module.exports = {
             if (err) console.log(err);
             else {
               console.log(" Concierge File written successfully\n");
+              const sqlConciergeQueries = fs.readFileSync(
+                SQL_CONCIERGE_DB_PATH,
+                "utf8"
+              );
+
+              const conciergeDB = new sqlite.Database(SQLITE_CONCIERGE_DB_PATH);
+              conciergeDB.serialize(() => {
+                conciergeDB.exec(sqlConciergeQueries, (err) => {
+                  if (err) {
+                    console.error("Error executing SQL queries:", err.message);
+                  } else {
+                    console.log("Concierge SQL queries executed successfully.");
+                  }
+
+                  conciergeDB.close();
+                });
+              });
             }
           });
         });
@@ -119,45 +140,31 @@ module.exports = {
             if (err) console.log(err);
             else {
               console.log(" Product File written successfully\n");
+
+              const sqlProductQueries = fs.readFileSync(
+                SQL_PRODUCT_DB_PATH,
+                "utf8"
+              );
+
+              const productDB = new sqlite.Database(SQLITE_PRODUCT_DB_PATH);
+              productDB.serialize(() => {
+                productDB.exec(sqlProductQueries, (err) => {
+                  if (err) {
+                    console.error("Error executing SQL queries:", err.message);
+                  } else {
+                    console.log("Product SQL queries executed successfully.");
+                  }
+
+                  productDB.close();
+                });
+              });
             }
           });
         });
 
         // Sqlite write conceirge
-        const sqlConciergeQueries = fs.readFileSync(
-          SQL_CONCIERGE_DB_PATH,
-          "utf8"
-        );
-
-        const conciergeDB = new sqlite.Database(SQLITE_CONCIERGE_DB_PATH);
-        conciergeDB.serialize(() => {
-          conciergeDB.exec(sqlConciergeQueries, (err) => {
-            if (err) {
-              console.error("Error executing SQL queries:", err.message);
-            } else {
-              console.log("Concierge SQL queries executed successfully.");
-            }
-
-            conciergeDB.close();
-          });
-        });
 
         // // Sqlite write product
-
-        const sqlProductQueries = fs.readFileSync(SQL_PRODUCT_DB_PATH, "utf8");
-
-        const productDB = new sqlite.Database(SQLITE_PRODUCT_DB_PATH);
-        productDB.serialize(() => {
-          productDB.exec(sqlProductQueries, (err) => {
-            if (err) {
-              console.error("Error executing SQL queries:", err.message);
-            } else {
-              console.log("Product SQL queries executed successfully.");
-            }
-
-            productDB.close();
-          });
-        });
       })();
     });
 
